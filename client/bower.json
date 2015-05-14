@@ -1,0 +1,25 @@
+{
+  "name": "angular-base",
+  "version": "0.0.1",
+  "homepage": "https://github.com/koblas/angular-base",
+  "private": true,
+  "authors": [
+    "David Koblas <david@koblas.com>"
+  ],
+  "description": "Angular Playground Project",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.3.15",
+    "underscore": "~1.8.3",
+    "angular-ui-router": "~0.2.14",
+    "restangular": "~1.5.1",
+    "angular-cookies": "~1.3.15",
+    "angular-bootstrap": "~0.13.0"
+  }
+}

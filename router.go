@@ -3,7 +3,7 @@ package main
 import (
   "github.com/julienschmidt/httprouter"
   "net/http"
-  "fmt"
+  // "fmt"
 )
 
 func appIndex(w http.ResponseWriter, req *http.Request) {
@@ -15,6 +15,8 @@ func InitRouter() *httprouter.Router {
 
     // Everything brings up the app
     router.NotFound = appIndex
+
+    router.POST("/api/v1/auth/", AuthPost)
 
     router.GET("/api/v1/todo/", TodoGet)
     router.GET("/api/v1/todo/:id", TodoGet)
