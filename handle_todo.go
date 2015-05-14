@@ -5,16 +5,10 @@ import (
     "net/http"
 
     "strings"
-    "strconv"
+    // "strconv"
     "encoding/json"
     // "fmt"
 )
-
-type TodoEntry struct {
-    Id          int         `json:"id"`
-    Title       string      `json:"title"`
-    Completed   bool        `json:"completed"`
-}
 
 //  When sent via JSON as a POST/PUT
 type BodyEntry struct {
@@ -23,20 +17,9 @@ type BodyEntry struct {
 }
 
 var (
-    entries = make([]TodoEntry, 0)
-    index   = 0
+    todoEntries = NewTodoStore("todo.db")
+    todoOrder = 0
 )
-
-//
-func getById(id int) *TodoEntry {
-    for idx, e := range entries {
-        if e.Id == id {
-            return &entries[idx]
-        }
-    }
-
-    return nil
-}
 
 //
 //
@@ -54,7 +37,9 @@ func TodoGet(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
             completed = strings.TrimSpace(v) == "true"
         }
 
-        result := make([]TodoEntry, 0)
+        result := make([]TodoItem, 0)
+
+        entries := todoEntries.entries.All()
 
         for  _, entry := range entries {
             ok := true
@@ -63,20 +48,13 @@ func TodoGet(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
             }
 
             if ok {
-                result = append(result, entry)
+                result = append(result, *entry)
             }
         }
 
         finishOk(w, result)
     } else {
-        id, err := strconv.Atoi(idStr)
-
-        if err != nil {
-            finishErr(w, "Bad ID")
-            return
-        }
-
-        entry := getById(id)
+        entry := todoEntries.entries.Find(idStr)
 
         if entry != nil {
             finishOk(w, entry)
@@ -96,13 +74,10 @@ func TodoPost(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
     }
 
     if len(title) != 0 {
-        entry := TodoEntry{}
-        index++
-        entry.Id = index
-        entry.Title = title
-        entry.Completed = false
+        entry := todoEntries.entries.Create(TodoItem{Title:title, Order: todoOrder})
+        todoOrder++
 
-        entries = append(entries, entry)
+        todoEntries.Save()
 
         finishOk(w, entry)
     } else {
@@ -111,19 +86,14 @@ func TodoPost(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 }
 
 func TodoPut(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-    id, err := strconv.Atoi(ps.ByName("id"))
+    idStr := ps.ByName("id")
 
-    if err != nil {
-        finishErr(w, "Bad ID")
-        return
-    }
-
-    entry := getById(id)
+    entry := todoEntries.entries.Find(idStr)
 
     if entry != nil {
         tentry := BodyEntry{}
 
-        json.NewDecoder(req.Body).Decode(&tentry)
+        err := json.NewDecoder(req.Body).Decode(&tentry)
 
         if err != nil {
             rjson.JSON(w, http.StatusNotFound, ResponseErr{Status:"err", Emsg: "No Such Entry"})
@@ -137,6 +107,8 @@ func TodoPut(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
             entry.Completed = *tentry.Completed
         }
 
+        todoEntries.Save()
+
         finishOk(w, *entry)
     } else {
         finishErr(w, "Not Found")
@@ -144,19 +116,12 @@ func TodoPut(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 }
 
 func TodoDelete(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-    id, err := strconv.Atoi(ps.ByName("id"))
+    id := ps.ByName("id")
 
-    if err != nil {
-        finishErr(w, "Bad ID")
+    if id != "" && todoEntries.entries.Delete(id) {
+        todoEntries.Save()
+        finishOk(w, nil)
         return
-    }
-
-    for idx, e := range entries {
-        if e.Id == id {
-            entries = append(entries[:idx], entries[idx+1:]...)
-            finishOk(w, nil)
-            return
-        }
     }
 
     finishErr(w, "Not Found")
