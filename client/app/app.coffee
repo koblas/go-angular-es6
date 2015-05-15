@@ -10,7 +10,7 @@ require('./controllers/auth')
 #
 #  Set the layout
 #
-app.config ($stateProvider) ->
+app.config ($stateProvider, $locationProvider) ->
     $stateProvider
         .state('app',
             url: ''
@@ -23,6 +23,10 @@ app.config ($stateProvider) ->
                 header:
                     controller: 'HeaderController'
                     template: require('../partials/header.html')
+        )
+    $locationProvider.html5Mode(    
+            enabled: true
+            requireBase: false
         )
 
 #
