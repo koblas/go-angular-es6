@@ -1,20 +1,21 @@
 package main
 
 import (
-  "github.com/julienschmidt/httprouter"
+  "github.com/gin-gonic/gin"
+
   "net/http"
   // "fmt"
 )
 
-func appIndex(w http.ResponseWriter, req *http.Request) {
-    http.ServeFile(w, req, "./static/app.html")
+func appIndex(c *gin.Context) {
+    http.ServeFile(c.Writer, c.Request, "./static/app.html")
 }
 
-func InitRouter() *httprouter.Router {
-    router := httprouter.New()
-
+func InitRouter(router *gin.Engine) {
     // Everything brings up the app
-    router.NotFound = appIndex
+    router.NoRoute(appIndex)
+
+    router.Static("/static", "./static")
 
     router.POST("/api/v1/auth/", AuthPost)
 
@@ -23,6 +24,4 @@ func InitRouter() *httprouter.Router {
     router.POST("/api/v1/todo/", TodoPost)
     router.PUT("/api/v1/todo/:id", TodoPut)
     router.DELETE("/api/v1/todo/:id", TodoDelete)
-
-    return router
 }

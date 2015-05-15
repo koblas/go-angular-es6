@@ -1,6 +1,7 @@
 package main
 
 import (
+    "github.com/gin-gonic/gin"
     "net/http"
 
     // "strings"
@@ -18,10 +19,12 @@ type ResponseErr struct {
     Emsg        string      `json:"emsg"`
 }
 
-func finishOk(w http.ResponseWriter, data interface{}) {
-    rjson.JSON(w, http.StatusOK, Response{Status:"ok", Data:data})
+func finishOk(c *gin.Context, data interface{}) {
+    // rjson.JSON(w, http.StatusOK, Response{Status:"ok", Data:data})
+    c.JSON(http.StatusOK, gin.H{"status":"ok", "data":data})
 }
 
-func finishErr(w http.ResponseWriter, emsg string) {
-    rjson.JSON(w, http.StatusNotFound, ResponseErr{Status:"err", Emsg: emsg})
+func finishErr(c *gin.Context, emsg string) {
+    // rjson.JSON(w, http.StatusNotFound, ResponseErr{Status:"err", Emsg: emsg})
+    c.JSON(http.StatusNotFound, gin.H{"status":"err", "emsg":emsg})
 }

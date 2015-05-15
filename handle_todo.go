@@ -1,12 +1,12 @@
 package main
 
 import (
-    "github.com/julienschmidt/httprouter"
-    "net/http"
+    "github.com/gin-gonic/gin"
+    // "net/http"
 
     "strings"
     // "strconv"
-    "encoding/json"
+    // "encoding/json"
     // "fmt"
 )
 
@@ -17,18 +17,17 @@ type BodyEntry struct {
 }
 
 var (
-    todoEntries = NewTodoStore("todo.db")
-    todoOrder = 0
+    todoEntries = NewTodoStore("db/todo.db")
 )
 
 //
 //
 //
-func TodoGet(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-    idStr := ps.ByName("id")
+func TodoGet(c *gin.Context) {
+    idStr := c.Params.ByName("id")
 
     if len(idStr) == 0 {
-        v := req.FormValue("completed")
+        v := c.Request.Form.Get("completed")
 
         checkCompleted := false
         completed := false
@@ -52,21 +51,21 @@ func TodoGet(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
             }
         }
 
-        finishOk(w, result)
+        finishOk(c, result)
     } else {
         entry := todoEntries.entries.Find(idStr)
 
         if entry != nil {
-            finishOk(w, entry)
+            finishOk(c, entry)
         } else {
-            finishErr(w, "Not Found")
+            finishErr(c, "Not Found")
         }
     }
 }
 
-func TodoPost(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+func TodoPost(c *gin.Context) {
     tentry := BodyEntry{}
-    json.NewDecoder(req.Body).Decode(&tentry)
+    c.Bind(&tentry)
 
     title := ""
     if tentry.Title != nil {
@@ -74,29 +73,26 @@ func TodoPost(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
     }
 
     if len(title) != 0 {
-        entry := todoEntries.entries.Create(TodoItem{Title:title, Order: todoOrder})
-        todoOrder++
+        entry := todoEntries.entries.Create(TodoItem{Title:title})
 
         todoEntries.Save()
 
-        finishOk(w, entry)
+        finishOk(c, entry)
     } else {
-        finishErr(w, "Title is required")
+        finishErr(c, "Title is required")
     }
 }
 
-func TodoPut(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-    idStr := ps.ByName("id")
+func TodoPut(c *gin.Context) {
+    idStr := c.Params.ByName("id")
 
     entry := todoEntries.entries.Find(idStr)
 
     if entry != nil {
         tentry := BodyEntry{}
 
-        err := json.NewDecoder(req.Body).Decode(&tentry)
-
-        if err != nil {
-            rjson.JSON(w, http.StatusNotFound, ResponseErr{Status:"err", Emsg: "No Such Entry"})
+        if !c.Bind(&tentry) {
+            finishErr(c, "No Such Entry")
             return
         }
 
@@ -109,20 +105,20 @@ func TodoPut(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 
         todoEntries.Save()
 
-        finishOk(w, *entry)
+        finishOk(c, *entry)
     } else {
-        finishErr(w, "Not Found")
+        finishErr(c, "Not Found")
     }
 }
 
-func TodoDelete(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-    id := ps.ByName("id")
+func TodoDelete(c *gin.Context) {
+    idStr := c.Params.ByName("id")
 
-    if id != "" && todoEntries.entries.Delete(id) {
+    if idStr != "" && todoEntries.entries.Delete(idStr) {
         todoEntries.Save()
-        finishOk(w, nil)
+        finishOk(c, nil)
         return
     }
 
-    finishErr(w, "Not Found")
+    finishErr(c, "Not Found")
 }

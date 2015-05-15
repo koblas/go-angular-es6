@@ -112,7 +112,14 @@ func (t Todo) Find(id string) *TodoItem {
 }
 
 func (t Todo) Create(item TodoItem) *TodoItem {
+    order := 0
+	for _, item := range t {
+        if item.Order > order {
+            order = item.Order
+        }
+    }
 	item.Id = newId()
+    item.Order = order + 1
 	t[item.Id] = &item
 	return &item
 }

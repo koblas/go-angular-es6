@@ -1,10 +1,8 @@
 package main
 
 import (
-    "github.com/julienschmidt/httprouter"
-    "net/http"
+    "github.com/gin-gonic/gin"
 
-    "encoding/json"
     "strings"
 
     // "fmt"
@@ -48,9 +46,9 @@ func login() string {
     return "test"
 }
 
-func registerHandler(w http.ResponseWriter, req *http.Request) {
+func registerHandler(c *gin.Context) {
     data := bodyEntry{}
-    json.NewDecoder(req.Body).Decode(&data)
+    c.Bind(&data)
 
     username := ""
     email    := ""
@@ -67,7 +65,7 @@ func registerHandler(w http.ResponseWriter, req *http.Request) {
     }
 
     if len(email) == 0 || len(username) == 0 || len(password) == 0 {
-        finishErr(w, "Missing argument - username, email or password")
+        finishErr(c, "Missing argument - username, email or password")
         return
     }
 
@@ -80,19 +78,19 @@ func registerHandler(w http.ResponseWriter, req *http.Request) {
 
     token := login()
 
-    finishOk(w, map[string]string{"token":token})
+    finishOk(c, map[string]string{"token":token})
 }
 
-func loginHandler(w http.ResponseWriter, req *http.Request) {
+func loginHandler(c *gin.Context) {
     data := bodyEntry{}
-    json.NewDecoder(req.Body).Decode(&data)
+    c.Bind(&data)
 
     if data.Token != nil {
         // TODO: Lookup user by token
 
         // if user == nil 
     } else if data.Email == nil || data.Password == nil || len(*data.Email) == 0 || len(*data.Password) == 0 {
-        finishErr(w, "Email/Password doesn't match")
+        finishErr(c, "Email/Password doesn't match")
         return
     } else {
     }
@@ -101,13 +99,13 @@ func loginHandler(w http.ResponseWriter, req *http.Request) {
 
     token := login()
 
-    finishOk(w, map[string]string{"token":token})
+    finishOk(c, map[string]string{"token":token})
 }
 
-func AuthPost(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-    if req.FormValue("register") != "" {
-        registerHandler(w, req)
+func AuthPost(c *gin.Context) {
+    if c.Request.Form.Get("register") != "" {
+        registerHandler(c)
     } else {
-        loginHandler(w, req)
+        loginHandler(c)
     }
 }
