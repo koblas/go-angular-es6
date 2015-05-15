@@ -12,16 +12,17 @@ func appIndex(c *gin.Context) {
 }
 
 func InitRouter(router *gin.Engine) {
-    // Everything brings up the app
+    // By Default - not found should be passed to Angular
     router.NoRoute(appIndex)
 
+    // Load the static assets
     router.Static("/static", "./static")
 
     router.POST("/api/v1/auth/", AuthPost)
 
-    router.GET("/api/v1/todo/", TodoGet)
+    router.GET("/api/v1/todo", TodoGet)
     router.GET("/api/v1/todo/:id", TodoGet)
-    router.POST("/api/v1/todo/", TodoPost)
+    router.POST("/api/v1/todo", TodoPost)
     router.PUT("/api/v1/todo/:id", TodoPut)
     router.DELETE("/api/v1/todo/:id", TodoDelete)
 }
