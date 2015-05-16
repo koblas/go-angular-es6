@@ -1,11 +1,9 @@
-package main
+package app
 
 import (
     "github.com/gin-gonic/gin"
 
     "strings"
-
-    // "fmt"
 )
 
 type UserEntry struct {
