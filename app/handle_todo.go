@@ -79,7 +79,7 @@ func (svc *TodoService) TodoPut(c *gin.Context) {
     if ! svc.app.db.Where(TodoItem{Guid: idStr}).First(&entry).RecordNotFound() {
         tentry := BodyEntry{}
 
-        if !c.Bind(&tentry) {
+        if c.Bind(&tentry) != nil {
             finishErr(c, "No Such Entry")
             return
         }

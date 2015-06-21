@@ -32,7 +32,7 @@ func (a *Application) initRouter() {
 	// Load the static assets
 	router.Static("/static", "./static")
 
-	router.POST("/api/v1/auth/", AuthPost)
+	router.POST("/api/v1/auth", AuthPost)
 
     // 
 	router.GET("/api/v1/todo", todo_svc.TodoGet)
