@@ -1,4 +1,4 @@
-<div class="navbar navbar-default navbar-static-top" role="navigation">
+<div class="navbar navbar-default navbar-static-top" role="navigation" ng-controller="HeaderController as vm">
   <div class="container">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
@@ -18,9 +18,9 @@
       </ul>
       <div class="navbar-right">
         <ul class="nav navbar-nav navbar-right">
-          <li ng-if="auth.isAuthenticated()"><a ng-click="logout()">Logout</a></li>
-          <li ng-if="!auth.isAuthenticated()"><a ui-sref="app.auth.register">Register</a></li>
-          <li ng-if="!auth.isAuthenticated()"><a ui-sref="app.auth.login">Login</a></li>
+          <li ng-if="vm.auth.isAuthenticated()"><a ng-click="vm.logout()">Logout</a></li>
+          <li ng-if="!vm.auth.isAuthenticated()"><a ui-sref="app.auth.register">Register</a></li>
+          <li ng-if="!vm.auth.isAuthenticated()"><a ui-sref="app.auth.login">Login</a></li>
         </ul>
       </div>
       <div class="col-xs-5 col-sm-4 pull-right" ng-if="auth.isAuthenticated()">

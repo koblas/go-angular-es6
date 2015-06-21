@@ -1,9 +1,10 @@
-  <form class="form-horizontal" role="form" ng-submit="register()">
+<div ng-controller="RegisterController as vm">
+  <form class="form-horizontal" role="form" ng-submit="vm.register()">
     <input type="hidden" name="next" value="{{next}}"/>
       <div class="form-group">
         <label class="col-sm-2 control-label" for="username">Username</label>
         <div class="col-sm-4">
-          <input type="text" class="form-control" name="username" id="email" ng-model="username">
+          <input type="text" class="form-control" name="username" id="email" ng-model="vm.username">
           <span ng-hide class="help-inline">{{ error }}</span>
         </div>
       </div>
@@ -11,7 +12,7 @@
       <div class="form-group {% if error %}error{% end %}">
         <label class="col-sm-2 control-label" for="email">Email</label>
         <div class="col-sm-4">
-          <input type="text" class="form-control" name="email" id="email" ng-model="email">
+          <input type="text" class="form-control" name="email" id="email" ng-model="vm.email">
           <span ng-hide class="help-inline">{{ error }}</span>
         </div>
       </div>
@@ -19,7 +20,7 @@
       <div class="form-group">
         <label class="col-sm-2 control-label" for="password">Password</label>
         <div class="col-sm-4">
-          <input type="password" class="form-control" name="password" ng-model="password" id="password">
+          <input type="password" class="form-control" name="password" ng-model="vm.password" id="password">
         </div>
       </div>
 
@@ -27,3 +28,4 @@
       <button type="submit" class="col-sm-offset-3 col-sm-2 btn btn-primary">Register</button>
     </div>
  </form>
+</div>

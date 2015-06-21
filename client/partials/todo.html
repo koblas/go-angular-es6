@@ -1,19 +1,19 @@
-  <div class="container">
+  <div class="container" ng-controller="TodoController as vm">
     <h1>Todos</h1>
-    <p id="empty" ng-hide="todos.length || !loaded">You don't have any todos! Add one now:</p>
+    <p id="empty" ng-hide="vm.todos.length || !loaded">You don't have any todos! Add one now:</p>
     <ul id="todos" class="list-unstyled">
-      <li ng-repeat="todo in todos">
+      <li ng-repeat="todo in vm.todos">
         <label class="checkbox">
-          <input type="checkbox" ng-model="todo.completed" ng-change="changeCompleted(todo)" />
+          <input type="checkbox" ng-model="todo.completed" ng-change="vm.changeCompleted(todo)" />
           {{todo.title}}
         </label>
       </li>
     </ul>
     <form class="form-inline">
-      <input id="todo-title" class="form-control" type="text" ng-model="newTodoTitle" />
-      <button id="add-btn" class="btn btn-success" ng-click="addTodo(newTodoTitle)">Add</button>
+      <input id="todo-title" class="form-control" type="text" ng-model="vm.newTodoTitle" />
+      <button id="add-btn" class="btn btn-success" ng-click="vm.addTodo(vm.newTodoTitle)">Add</button>
     </form>
     <p>
-      <a href id="remove-completed-btn" ng-click="removeCompletedItems()">Remove completed items</a>
+      <a href id="remove-completed-btn" ng-click="vm.removeCompletedItems()">Remove completed items</a>
     </p>
   </div>
