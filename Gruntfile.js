@@ -1,45 +1,53 @@
-module.exports = function(grunt) {
-  grunt.initConfig({
-    browserify: {
-      options: {
-        transform: ['coffeeify', 'partialify'],
-        extensions: ['.coffee'],
-        debug: true,
+module.exports = function (grunt) {
+   grunt.initConfig({
+      browserify: {
+         dist: {
+            options: {
+               transform: [
+                  ["babelify", {
+                     loose: "all",
+                     sourceMap: true,
+                  }], "partialify"
+               ],
+               extensions: ['.es6'],
+               debug: true
+            },
+            files: {
+               "./static/app/app.js": ["./client/app/app.es6"]
+            }
+         }
       },
-      js: {
-        // A single entry point for our app
-        src: 'client/app/app.coffee',
-        // Compile to a single file to add a script tag for in your HTML
-        dest: 'static/app/app.js',
+      copy: {
+          all: {
+              // This copies all the html and css into the dist/ folder
+              expand: true,
+              cwd: 'client/',
+              src: ['**/*.css', 'components/**', 'bootstrap/**', 'app.html'],
+              dest: 'static/',
+          },
       },
-    },
-    watch: {
-      js: {
-          files: 'client/**',
-          tasks: ['browserify', 'copy'],
-          options: {
-              spawn: false
-          }
-      },
-    },
-    copy: {
-      all: {
-        // This copies all the html and css into the dist/ folder
-        expand: true,
-        cwd: 'client/',
-        src: ['**/*.css', 'bower_components/**', 'bootstrap/**'],
-        dest: 'static/',
-      },
-    },
-  });
-
-  // Load the npm installed tasks
-  grunt.loadNpmTasks('grunt-browserify');
-  // grunt.loadNpmTasks('grunt-ngmin');
-  // grunt.loadNpmTasks('grunt-watchify');
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-
-  // The default tasks to run when you type: grunt
-  grunt.registerTask('default', ['browserify', 'copy', 'watch']);
+      watch: {
+         grunt: {
+            files: ["Gruntfile.js"],
+            options: {
+                reload: true
+            }
+         },
+         app: {
+            files: ["./client/app/**", "./client/partial/**"],
+            tasks: ["browserify"]
+         },
+         files: {
+            files: ['./client/**/*.css', './client/components/**', './client/bootstrap/**', './client/app.html'],
+            tasks: ["copy"]
+         }
+      }
+   });
+ 
+   grunt.loadNpmTasks("grunt-browserify");
+   grunt.loadNpmTasks("grunt-contrib-watch");
+   grunt.loadNpmTasks('grunt-contrib-copy');
+ 
+   grunt.registerTask("default", ["watch"]);
+   grunt.registerTask("build", ["browserify", "copy"]);
 };
