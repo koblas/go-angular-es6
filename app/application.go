@@ -27,18 +27,26 @@ func (a *Application) initRouter() {
 	// By Default - not found should be passed to Angular
 	router.NoRoute(appIndex)
 
-    svc := TodoService{app: a}
+    todo_svc := TodoService{app: a}
 
 	// Load the static assets
 	router.Static("/static", "./static")
 
 	router.POST("/api/v1/auth/", AuthPost)
 
-	router.GET("/api/v1/todo", svc.TodoGet)
-	router.GET("/api/v1/todo/:id", svc.TodoGet)
-	router.POST("/api/v1/todo", svc.TodoPost)
-	router.PUT("/api/v1/todo/:id", svc.TodoPut)
-	router.DELETE("/api/v1/todo/:id", svc.TodoDelete)
+    // 
+	router.GET("/api/v1/todo", todo_svc.TodoGet)
+	router.GET("/api/v1/todo/:id", todo_svc.TodoGet)
+	router.POST("/api/v1/todo", todo_svc.TodoPost)
+	router.PUT("/api/v1/todo/:id", todo_svc.TodoPut)
+	router.DELETE("/api/v1/todo/:id", todo_svc.TodoDelete)
+
+    //
+    //
+    //
+    mix_svc := MixpanelService{app: a}
+	router.GET("/track", mix_svc.Track)
+	router.GET("/track/", mix_svc.Track)
 }
 
 func (a *Application) getDb() (gorm.DB, error) {
@@ -60,6 +68,7 @@ func (a *Application) Init() {
     a.db = db
 
 	a.initRouter()
+    initMixpanel()      // TODO - this should be pushed into a mixpanel init
 }
 
 func (a *Application) Run() {
