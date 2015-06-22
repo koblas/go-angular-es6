@@ -10,13 +10,15 @@ Install Grunt dependancies
   * npm install
 
 Do initial build
-  * grunt browserify copy
+  * grunt build
 
 Watch JS Changes
-  * grunt watch
-
+  * grunt 
 
 ### Golang Setup
 
+Build the Database
+  * go run cmd/server.go migratedb
+
 Run App
-  * go run *.go
+  * go run cmd/server.go server
