@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/koblas/likemark/app"
-	"github.com/koblas/likemark/conf"
+	"github.com/koblas/go-angular-es6/app"
+	"github.com/koblas/go-angular-es6/conf"
 )
 
 type LikeMarkService struct {

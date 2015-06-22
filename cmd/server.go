@@ -2,16 +2,16 @@ package main
 
 import (
 	"github.com/codegangsta/cli"
-	"github.com/koblas/likemark/conf"
-	"github.com/koblas/likemark/service"
+	"github.com/koblas/go-angular-es6/conf"
+	"github.com/koblas/go-angular-es6/service"
 	"log"
     "os"
 )
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "likemark"
-	app.Usage = "Basic likemark service"
+	app.Name = "testapp"
+	app.Usage = "Basic test service"
 	app.Version = "0.0.1"
 
 	app.Flags = []cli.Flag{

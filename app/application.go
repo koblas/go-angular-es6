@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/koblas/likemark/conf"
+	"github.com/koblas/go-angular-es6/conf"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
