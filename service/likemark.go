@@ -8,13 +8,13 @@ import (
 type LikeMarkService struct {
 }
 
-func (s *LikeMarkService) Migrate(cfg conf.Config) error {
+func (s *LikeMarkService) Migrate(cfg *conf.ConfigData) error {
 	a := app.Application{Config: cfg}
 
 	return a.Migrate()
 }
 
-func (s *LikeMarkService) Run(cfg conf.Config) error {
+func (s *LikeMarkService) Run(cfg *conf.ConfigData) error {
 	a := app.Application{Config: cfg}
 
 	a.Init()

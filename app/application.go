@@ -13,7 +13,7 @@ import (
 )
 
 type Application struct {
-	Config conf.Config
+	Config *conf.ConfigData
 	engine *gin.Engine
     db     gorm.DB
 }
@@ -61,7 +61,7 @@ func (a *Application) getDb() (gorm.DB, error) {
 	// connectionString := cfg.DbUser + ":" + cfg.DbPassword + "@tcp(" + cfg.DbHost + ":3306)/" + cfg.DbName + "?charset=utf8&parseTime=True"
 	// return gorm.Open("mysql", connectionString)
 
-	db, err := gorm.Open("sqlite3", a.Config.Database)
+	db, err := gorm.Open("sqlite3", a.Config.App.Database)
 
     db.LogMode(true)
 	db.SingularTable(true)
@@ -115,7 +115,7 @@ func (a *Application) Init() {
 }
 
 func (a *Application) Run() {
-	a.engine.Run(fmt.Sprintf(":%d", a.Config.Port))
+	a.engine.Run(fmt.Sprintf(":%d", a.Config.App.HttpPort))
 }
 
 func (a *Application) Migrate() error {
