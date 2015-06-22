@@ -69,12 +69,20 @@ func (a *Application) getDb() (gorm.DB, error) {
     return db, err
 }
 
-func (a *Application) GetCurrentUser(req *http.Request) *User {
-    cookie, err := req.Cookie(USER_COOKIE)
-    if err != nil {
-        return nil
+func (a *Application) GetCurrentUser(req *http.Request, token *string) *User {
+
+    var tokenStr string
+    var err error
+
+    if token == nil {
+        cookie, err := req.Cookie(USER_COOKIE)
+        if err != nil {
+            return nil
+        }
+        tokenStr = cookie.Value
+    } else {
+        tokenStr = *token
     }
-    tokenStr := cookie.Value
 
     if tokenStr[1] == '%' {
         tokenStr, err = url.QueryUnescape(tokenStr)
@@ -84,11 +92,9 @@ func (a *Application) GetCurrentUser(req *http.Request) *User {
 
     guid, err = DecodeSignedValue(SECRET, AUTH_NAME, tokenStr, nil)
 
-    fmt.Println("err = ", err)
     if err != nil {
         return nil
     }
-    fmt.Println("GUID = ", guid)
 
     user := User{}
     if a.db.Where(User{Guid: guid}).First(&user).RecordNotFound() {

@@ -17,7 +17,6 @@ class AuthService {
                     if (!auth && !auth.token)  {
                         //  If the token is "bad" e.g. you're no longer a valid user, cleanup
                         delete $cookies[this.auth_cookie]
-                        console.log("THIS = ", this,  "SELF = ", this)
                         this.authenticated = false
                         $state.transitionTo("index")
                     }

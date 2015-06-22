@@ -113,7 +113,13 @@ func (svc *AuthService) loginHandler(c *gin.Context) {
     }
 
     if data.Token != nil {
-        // TODO: Lookup user by token
+        token = strings.TrimSpace(*data.Token)
+
+        user := svc.app.GetCurrentUser(nil, &token)
+        if user == nil {
+            finishErr(c, "Bad User")
+            return
+        }
     } else if len(email) == 0 || len(password) == 0 {
         finishErr(c, "Email/Password doesn't match")
         return

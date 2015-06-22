@@ -20,7 +20,7 @@ type TodoService struct {
 //
 //
 func (svc *TodoService) TodoGet(c *gin.Context) {
-    user := svc.app.GetCurrentUser(c.Request)
+    user := svc.app.GetCurrentUser(c.Request, nil)
     if user == nil {
         finishErr(c, "Not logged in")
         return
@@ -57,7 +57,7 @@ func (svc *TodoService) TodoGet(c *gin.Context) {
 }
 
 func (svc *TodoService) TodoPost(c *gin.Context) {
-    user := svc.app.GetCurrentUser(c.Request)
+    user := svc.app.GetCurrentUser(c.Request, nil)
     if user == nil {
         finishErr(c, "Not logged in")
         return
@@ -85,7 +85,7 @@ func (svc *TodoService) TodoPost(c *gin.Context) {
 }
 
 func (svc *TodoService) TodoPut(c *gin.Context) {
-    user := svc.app.GetCurrentUser(c.Request)
+    user := svc.app.GetCurrentUser(c.Request, nil)
     if user == nil {
         finishErr(c, "Not logged in")
         return
@@ -119,7 +119,7 @@ func (svc *TodoService) TodoPut(c *gin.Context) {
 }
 
 func (svc *TodoService) TodoDelete(c *gin.Context) {
-    user := svc.app.GetCurrentUser(c.Request)
+    user := svc.app.GetCurrentUser(c.Request, nil)
     if user == nil {
         finishErr(c, "Not logged in")
         return
