@@ -1,4 +1,5 @@
 class AuthService {
+    /*@ngInject*/
     constructor(Restangular, $q, $cookies, $state) {
         this.$cookies = $cookies
         this.$q = $q
@@ -79,7 +80,5 @@ class AuthService {
         return deferred.promise
     }
 }
-
-AuthService.$inject = ['Restangular', '$q', '$cookies', '$state'];
 
 export default AuthService

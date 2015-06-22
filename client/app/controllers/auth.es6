@@ -43,6 +43,7 @@ function AuthRegister(app) {
 }
 
 class LoginController {
+    /*@ngInject*/
     constructor($location, AuthService, $stateParams) {
         this.AuthService = AuthService
         this.$location = $location
@@ -72,10 +73,8 @@ class LoginController {
     }
 }
 
-LoginController.$inject = ['$location', 'AuthService', '$stateParams'];
-
-
 class RegisterController {
+    /*@ngInject*/
     constructor($location, AuthService, $stateParams) {
         this.AuthService = AuthService
         this.$location = $location
@@ -106,7 +105,5 @@ class RegisterController {
             .catch((err) => this.error = err)
     }
 }
-
-RegisterController.$inject = ['$location', 'AuthService', '$stateParams'];
 
 export { AuthRegister }

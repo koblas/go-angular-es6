@@ -29,14 +29,15 @@ function MainRegister(app) {
 }
 
 class IndexController {
+    /*@ngInject*/
     constructor(AuthService, $state) {
         if (AuthService.isAuthenticated())
             $state.go('app.dashboard')
     }
 }
-IndexController.$inject = ['AuthService', '$state']
 
 class HeaderController {
+    /*@ngInject*/
     constructor(AuthService, $location) {
         this.auth = AuthService;
         this.$location = $location
@@ -47,6 +48,5 @@ class HeaderController {
         this.$location.path('/');
     }
 }
-HeaderController.$inject = ['AuthService', '$location']
 
 export { MainRegister }

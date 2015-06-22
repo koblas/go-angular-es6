@@ -1,16 +1,17 @@
+/*
+**  Good Reference
+**       http://www.michaelbromley.co.uk/blog/350/exploring-es6-classes-in-angularjs-1-x
+**
+*/
+
 var app = angular.module('iqvine', ['restangular', 'ui.router', 'ngCookies', 'ui.bootstrap'])
 
 angular.element(document).ready(() => angular.bootstrap(document, ['iqvine']))
 
 import AuthService from './services/auth'
-import { AuthRegister } from './controllers/auth'
-import { TodoRegister } from './controllers/todo'
-import { MainRegister } from './controllers/main'
-
-// require('./services/auth')
-// require('./controllers/main')
-// require('./controllers/todo')
-// require('./controllers/auth')
+import {AuthRegister} from './controllers/auth'
+import {TodoRegister} from './controllers/todo'
+import {MainRegister} from './controllers/main'
 
 app.service('AuthService', AuthService)
 

@@ -26,6 +26,7 @@ function TodoRegister(app) {
 }
 
 class TodoController {
+    /*@ngInject*/
     constructor(Restangular) {
         this.todos = [];
         this.loaded = false;
@@ -74,7 +75,5 @@ class TodoController {
         })
     }
 }
-
-TodoController.$inject = ['Restangular']
 
 export { TodoRegister }
