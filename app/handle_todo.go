@@ -20,6 +20,12 @@ type TodoService struct {
 //
 //
 func (svc *TodoService) TodoGet(c *gin.Context) {
+    user := svc.app.GetCurrentUser(c.Request)
+    if user == nil {
+        finishErr(c, "Not logged in")
+        return
+    }
+
     idStr := c.Params.ByName("id")
 
     if len(idStr) == 0 {
@@ -27,7 +33,7 @@ func (svc *TodoService) TodoGet(c *gin.Context) {
 
         var     entries []TodoItem
 
-        query := &svc.app.db
+        query := svc.app.db.Where(&TodoItem{UserGuid: user.Guid})
         if v != "" {
             query = query.Where(&TodoItem{Completed: v == "true"})
         }
@@ -40,7 +46,7 @@ func (svc *TodoService) TodoGet(c *gin.Context) {
             finishOk(c, entries)
         }
     } else {
-        entry := TodoItem{Guid: idStr}
+        entry := TodoItem{Guid: idStr, UserGuid: user.Guid}
 
         if ! svc.app.db.First(&entry).RecordNotFound() {
             finishOk(c, entry)
@@ -51,6 +57,12 @@ func (svc *TodoService) TodoGet(c *gin.Context) {
 }
 
 func (svc *TodoService) TodoPost(c *gin.Context) {
+    user := svc.app.GetCurrentUser(c.Request)
+    if user == nil {
+        finishErr(c, "Not logged in")
+        return
+    }
+
     tentry := BodyEntry{}
     c.Bind(&tentry)
 
@@ -62,6 +74,7 @@ func (svc *TodoService) TodoPost(c *gin.Context) {
     if len(title) != 0 {
         entry := NewTodoItem()
         entry.Title = title
+        entry.UserGuid = user.Guid
 
         svc.app.db.Create(&entry)
 
@@ -72,11 +85,17 @@ func (svc *TodoService) TodoPost(c *gin.Context) {
 }
 
 func (svc *TodoService) TodoPut(c *gin.Context) {
+    user := svc.app.GetCurrentUser(c.Request)
+    if user == nil {
+        finishErr(c, "Not logged in")
+        return
+    }
+
     idStr := c.Params.ByName("id")
 
     entry := TodoItem{}
 
-    if ! svc.app.db.Where(TodoItem{Guid: idStr}).First(&entry).RecordNotFound() {
+    if ! svc.app.db.Where(TodoItem{Guid: idStr, UserGuid: user.Guid}).First(&entry).RecordNotFound() {
         tentry := BodyEntry{}
 
         if c.Bind(&tentry) != nil {
@@ -100,10 +119,16 @@ func (svc *TodoService) TodoPut(c *gin.Context) {
 }
 
 func (svc *TodoService) TodoDelete(c *gin.Context) {
+    user := svc.app.GetCurrentUser(c.Request)
+    if user == nil {
+        finishErr(c, "Not logged in")
+        return
+    }
+
     idStr := c.Params.ByName("id")
 
     if idStr != "" {
-        query := svc.app.db.Where(TodoItem{Guid: idStr}).Delete(TodoItem{})
+        query := svc.app.db.Where(TodoItem{Guid: idStr, UserGuid: user.Guid}).Delete(TodoItem{})
         if query.RecordNotFound() {
             finishErr(c, "Not Found")
         } else {

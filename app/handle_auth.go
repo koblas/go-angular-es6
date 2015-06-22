@@ -3,6 +3,7 @@ package app
 import (
     "github.com/gin-gonic/gin"
 
+    "fmt"
     "strings"
 )
 
@@ -16,9 +17,15 @@ type UserEntry struct {
 //  When sent via JSON as a POST/PUT
 type bodyEntry struct {
     Email       *string      `json:"email,omitempty"`
-    Username    *string      `json:"username,omitempty"`
     Password    *string      `json:"password,omitempty"`
     Token       *string      `json:"token,omitempty"`
+    Params struct {
+        Username    *string      `json:"username,omitempty"`
+    } `json:"params"`
+}
+
+type AuthService struct {
+    app     *Application
 }
 
 var (
@@ -44,7 +51,7 @@ func login() string {
     return "test"
 }
 
-func registerHandler(c *gin.Context) {
+func (svc *AuthService) registerHandler(c *gin.Context) {
     data := bodyEntry{}
     c.Bind(&data)
 
@@ -55,8 +62,8 @@ func registerHandler(c *gin.Context) {
     if data.Email != nil {
         email = strings.TrimSpace(*data.Email)
     }
-    if data.Username != nil {
-        username = strings.TrimSpace(*data.Username)
+    if data.Params.Username != nil {
+        username = strings.TrimSpace(*data.Params.Username)
     }
     if data.Password != nil {
         password = strings.TrimSpace(*data.Password)
@@ -67,43 +74,76 @@ func registerHandler(c *gin.Context) {
         return
     }
 
-    // check if unique email
-    //    finishErr("Email already in use")
+    tuser := User{}
 
-    // Create User
+    if ! svc.app.db.Where(User{Email: email}).First(&tuser).RecordNotFound() {
+        finishErr(c, "Existing User")
+        return
+    }
 
-    // token := login(user)
+    user := NewUser(email, username)
+    user.setPassword(password)
 
-    token := login()
+    err := svc.app.db.Create(&user).Error
+    if err != nil {
+        fmt.Println(err)
+        finishErr(c, "Existing User")
+        return
+    }
+
+    token := user.getToken()
 
     finishOk(c, map[string]string{"token":token})
 }
 
-func loginHandler(c *gin.Context) {
+func (svc *AuthService) loginHandler(c *gin.Context) {
     data := bodyEntry{}
     c.Bind(&data)
 
+    var token string
+
+    email    := ""
+    password := ""
+
+    if data.Email != nil {
+        email = strings.TrimSpace(*data.Email)
+    }
+    if data.Password != nil {
+        password = strings.TrimSpace(*data.Password)
+    }
+
     if data.Token != nil {
         // TODO: Lookup user by token
-
-        // if user == nil 
-    } else if data.Email == nil || data.Password == nil || len(*data.Email) == 0 || len(*data.Password) == 0 {
+    } else if len(email) == 0 || len(password) == 0 {
         finishErr(c, "Email/Password doesn't match")
         return
     } else {
+        user := User{}
+        if svc.app.db.Where(User{Email: email}).First(&user).RecordNotFound() {
+            finishErr(c, "Email/Password doesn't match")
+            return
+        }
+
+        if ! user.validate(password) {
+            finishErr(c, "Email/Password doesn't match")
+            return
+        }
+
+        token = user.getToken()
     }
 
-    // TODO: self.login(user)
-
-    token := login()
+    if len(token) == 0 {
+        finishErr(c, "Unkown error")
+        return
+    }
 
     finishOk(c, map[string]string{"token":token})
 }
 
-func AuthPost(c *gin.Context) {
-    if c.Request.Form.Get("register") != "" {
-        registerHandler(c)
+func (svc *AuthService) AuthPost(c *gin.Context) {
+    if c.Request.FormValue("register") != "" {
+        svc.registerHandler(c)
     } else {
-        loginHandler(c)
+        svc.loginHandler(c)
     }
 }

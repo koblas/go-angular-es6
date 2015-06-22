@@ -8,6 +8,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	"fmt"
+	"net/url"
 	"net/http"
 )
 
@@ -27,14 +28,21 @@ func (a *Application) initRouter() {
 	// By Default - not found should be passed to Angular
 	router.NoRoute(appIndex)
 
-    todo_svc := TodoService{app: a}
-
 	// Load the static assets
 	router.Static("/static", "./static")
 
-	router.POST("/api/v1/auth", AuthPost)
+    //
+    //  Authentication handler
+    //
+    auth_svc := AuthService{app: a}
+
+	router.POST("/api/v1/auth", auth_svc.AuthPost)
 
     // 
+    //  Todo Handlers
+    // 
+    todo_svc := TodoService{app: a}
+
 	router.GET("/api/v1/todo", todo_svc.TodoGet)
 	router.GET("/api/v1/todo/:id", todo_svc.TodoGet)
 	router.POST("/api/v1/todo", todo_svc.TodoPost)
@@ -61,6 +69,35 @@ func (a *Application) getDb() (gorm.DB, error) {
     return db, err
 }
 
+func (a *Application) GetCurrentUser(req *http.Request) *User {
+    cookie, err := req.Cookie(USER_COOKIE)
+    if err != nil {
+        return nil
+    }
+    tokenStr := cookie.Value
+
+    if tokenStr[1] == '%' {
+        tokenStr, err = url.QueryUnescape(tokenStr)
+    }
+
+    var guid string
+
+    guid, err = DecodeSignedValue(SECRET, AUTH_NAME, tokenStr, nil)
+
+    fmt.Println("err = ", err)
+    if err != nil {
+        return nil
+    }
+    fmt.Println("GUID = ", guid)
+
+    user := User{}
+    if a.db.Where(User{Guid: guid}).First(&user).RecordNotFound() {
+        return nil
+    }
+
+    return &user
+}
+
 func (a *Application) Init() {
 	a.engine = gin.Default()
 	db, _ := a.getDb()
@@ -82,6 +119,7 @@ func (a *Application) Migrate() error {
 	}
 
 	db.AutoMigrate(&TodoItem{})
+	db.AutoMigrate(&User{})
 
 	return nil
 }

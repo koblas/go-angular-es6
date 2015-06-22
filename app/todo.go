@@ -13,6 +13,7 @@ func generateId() string {
 type TodoItem struct {
 	Id        int `json:"_" gorm:"primary_key"`
 	Guid      string `json:"id" sql:"index"`
+	UserGuid  string `json:"_" sql:"index"`
 	Title     string `json:"title"`
 	Completed bool   `json:"completed"`
 	Order     int    `json:"order"`
