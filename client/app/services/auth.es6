@@ -1,3 +1,5 @@
+import app from '../app'
+
 class AuthService {
     /*@ngInject*/
     constructor(Restangular, $q, $cookies, $state) {
@@ -80,4 +82,4 @@ class AuthService {
     }
 }
 
-export default AuthService
+app.service('AuthService', AuthService)

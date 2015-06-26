@@ -1,48 +1,45 @@
-function AuthRegister(app) {
-    app.config(($stateProvider) => {
-        //  States
-        $stateProvider
-            .state('app.auth', {
-                abstract: true,
-                url: "/auth",
-                template: '<ui-view/>'
-            })
-            .state('app.auth.register', {
-                url: "/register?next",
-                views: {
-                    'content@app': {
-                        template: require("../../partials/auth/register.html"),
-                        authenticate: false
-                    }
-                }
-            })
-            .state('app.auth.login', {
-                url: "/login?next",
-                views: {
-                    'content@app': {
-                        template: require("../../partials/auth/login.html"),
-                        authenticate: false
-                    }
-                }
-            })
-            .state('app.auth.logout', {
-                url: "/logout",
-                // template: require("../../partials/auth/logout.html")
-                views: {
-                    'content@app': {
-                        template: "<div></div>",
-                        controller: "LogoutController",
-                        authenticate: false
-                    }
-                }
-            })
-    })
+import app from '../app'
 
-    app.controller('LoginController', LoginController)
-    app.controller('RegisterController', RegisterController)
-}
+app.config(($stateProvider) => {
+    //  States
+    $stateProvider
+        .state('app.auth', {
+            abstract: true,
+            url: "/auth",
+            template: '<ui-view/>'
+        })
+        .state('app.auth.register', {
+            url: "/register?next",
+            views: {
+                'content@app': {
+                    template: require("../../partials/auth/register.html"),
+                    authenticate: false
+                }
+            }
+        })
+        .state('app.auth.login', {
+            url: "/login?next",
+            views: {
+                'content@app': {
+                    template: require("../../partials/auth/login.html"),
+                    authenticate: false
+                }
+            }
+        })
+        .state('app.auth.logout', {
+            url: "/logout",
+            // template: require("../../partials/auth/logout.html")
+            views: {
+                'content@app': {
+                    template: "<div></div>",
+                    controller: "LogoutController",
+                    authenticate: false
+                }
+            }
+        })
+})
 
-class LoginController {
+app.controller('LoginController', class LoginController {
     /*@ngInject*/
     constructor($location, AuthService, $stateParams) {
         this.AuthService = AuthService
@@ -71,9 +68,9 @@ class LoginController {
             .then(() => this.$location.path(this.next))
             .catch((err) => console.log("Auth Error", err))
     }
-}
+})
 
-class RegisterController {
+app.controller('RegisterController', class RegisterController {
     /*@ngInject*/
     constructor($location, AuthService, $stateParams) {
         this.AuthService = AuthService
@@ -104,6 +101,4 @@ class RegisterController {
             .then(() => this.$location.path(this.next))
             .catch((err) => this.error = err)
     }
-}
-
-export { AuthRegister }
+})

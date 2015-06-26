@@ -13,7 +13,7 @@ module.exports = function (grunt) {
                debug: true
             },
             files: {
-               "./static/app/app.js": ["./client/app/app.es6"]
+               "./static/app.js": ["./client/app/main.es6"]
             }
          }
       },

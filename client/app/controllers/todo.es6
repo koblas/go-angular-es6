@@ -1,31 +1,29 @@
-function TodoRegister(app) {
-    app.config(($stateProvider) => {
-        $stateProvider
-            .state('app.dashboard', {
-                url: '/dash',
-                authenticate: true,
-                views: {
-                    'content@app': {
-                        template: require('../../partials/dashboard.html'),
-                        // controller: "DashboardController",
-                    }
-                }
-            })
-            .state('app.todo', {
-                url: '/todo',
-                authenticate: true,
-                views: {
-                    'content@app': {
-                        template: require('../../partials/todo.html'),
-                    }
-                }
-            });
-    })
+import app from '../app'
 
-    app.controller('TodoController', TodoController)
-}
+app.config(($stateProvider) => {
+    $stateProvider
+        .state('app.dashboard', {
+            url: '/dash',
+            authenticate: true,
+            views: {
+                'content@app': {
+                    template: require('../../partials/dashboard.html'),
+                    // controller: "DashboardController",
+                }
+            }
+        })
+        .state('app.todo', {
+            url: '/todo',
+            authenticate: true,
+            views: {
+                'content@app': {
+                    template: require('../../partials/todo.html'),
+                }
+            }
+        });
+})
 
-class TodoController {
+app.controller('TodoController', class TodoController {
     /*@ngInject*/
     constructor(Restangular) {
         this.todos = [];
@@ -74,6 +72,4 @@ class TodoController {
             })
         })
     }
-}
-
-export { TodoRegister }
+})

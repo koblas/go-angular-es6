@@ -1,42 +1,39 @@
-function MainRegister(app) {
-    app.config(($stateProvider) => {
-        $stateProvider
-            .state('app.index_', {
-                url: '',
-                views: {
-                    'content@app': {
-                        template: require('../../partials/index.html'),
-                        controller: "IndexController",
-                        authenticate: false
-                    }
-                }
-            });
-        $stateProvider
-            .state('app.index', {
-                url: '/',
-                views: {
-                    'content@app': {
-                        template: require('../../partials/index.html'),
-                        controller: "IndexController",
-                        authenticate: false
-                    }
-                }
-            });
-    })
+import app from '../app'
 
-    app.controller('HeaderController', HeaderController)
-    app.controller('IndexController', IndexController)
-}
+app.config(($stateProvider) => {
+    $stateProvider
+        .state('app.index_', {
+            url: '',
+            views: {
+                'content@app': {
+                    template: require('../../partials/index.html'),
+                    controller: "IndexController",
+                    authenticate: false
+                }
+            }
+        });
+    $stateProvider
+        .state('app.index', {
+            url: '/',
+            views: {
+                'content@app': {
+                    template: require('../../partials/index.html'),
+                    controller: "IndexController",
+                    authenticate: false
+                }
+            }
+        });
+})
 
-class IndexController {
+app.controller('IndexController', class IndexController {
     /*@ngInject*/
     constructor(AuthService, $state) {
         if (AuthService.isAuthenticated())
             $state.go('app.dashboard')
     }
-}
+})
 
-class HeaderController {
+app.controller('HeaderController', class HeaderController {
     /*@ngInject*/
     constructor(AuthService, $location) {
         this.auth = AuthService;
@@ -47,6 +44,4 @@ class HeaderController {
         this.auth.logout();
         this.$location.path('/');
     }
-}
-
-export { MainRegister }
+})
