@@ -6,17 +6,15 @@
 
 import app from './app'
 
-angular.element(document).ready(() => angular.bootstrap(document, ['iqvine']))
-
 import './services/auth'
 import './controllers/auth'
 import './controllers/todo'
 import './controllers/main'
 
-app.service('AuthService', AuthService)
-
-AuthRegister(app)
-TodoRegister(app)
+//
+//  Bootstrap in the UI
+//
+angular.element(document).ready(() => angular.bootstrap(document, [app.name]))
 
 //
 //  Set the layout
