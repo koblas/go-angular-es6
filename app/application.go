@@ -18,6 +18,10 @@ type Application struct {
     db     gorm.DB
 }
 
+func NewApplication(cfg *conf.ConfigData) *Application {
+    return &Application{ Config: cfg }
+}
+
 func appIndex(c *gin.Context) {
 	http.ServeFile(c.Writer, c.Request, "./static/app.html")
 }
@@ -115,6 +119,7 @@ func (a *Application) Init() {
 }
 
 func (a *Application) Run() {
+    a.Init()
 	a.engine.Run(fmt.Sprintf(":%d", a.Config.App.HttpPort))
 }
 

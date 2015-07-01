@@ -2,23 +2,23 @@ package main
 
 import (
 	"github.com/codegangsta/cli"
+	"github.com/koblas/go-angular-es6/app"
 	"github.com/koblas/go-angular-es6/conf"
-	"github.com/koblas/go-angular-es6/service"
 	"log"
     "os"
 )
 
 func main() {
-	app := cli.NewApp()
-	app.Name = "testapp"
-	app.Usage = "Basic test service"
-	app.Version = "0.0.1"
+	cliapp := cli.NewApp()
+	cliapp.Name = "testapp"
+	cliapp.Usage = "Basic test service"
+	cliapp.Version = "0.0.1"
 
-	app.Flags = []cli.Flag{
+	cliapp.Flags = []cli.Flag{
 		cli.StringFlag{"config, c", "config.yaml", "config file to use", "APP_CONFIG"},
 	}
 
-	app.Commands = []cli.Command{
+	cliapp.Commands = []cli.Command{
 		{
 			Name:  "server",
 			Usage: "Run the http server",
@@ -29,11 +29,9 @@ func main() {
 					return
 				}
 
-				svc := service.LikeMarkService{}
+                a := app.NewApplication(&conf.Config)
 
-				if err = svc.Run(&conf.Config); err != nil {
-					log.Fatal(err)
-				}
+				a.Run()
 			},
 		},
 		{
@@ -46,13 +44,14 @@ func main() {
 					return
 				}
 
-				svc := service.LikeMarkService{}
+                a := app.NewApplication(&conf.Config)
 
-				if err = svc.Migrate(&conf.Config); err != nil {
+				if err = a.Migrate(); err != nil {
 					log.Fatal(err)
 				}
 			},
 		},
 	}
-	app.Run(os.Args)
+
+	cliapp.Run(os.Args)
 }
