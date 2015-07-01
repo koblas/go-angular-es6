@@ -17,9 +17,9 @@ import './controllers/main'
 angular.element(document).ready(() => angular.bootstrap(document, [app.name]))
 
 //
-//  Set the layout
+//  Set the layout and Router
 //
-app.config(($stateProvider, $locationProvider) => {
+app.config(($stateProvider, $locationProvider, $urlRouteProvider) => {
     $stateProvider
         .state('app', {
             url: '',
@@ -37,40 +37,38 @@ app.config(($stateProvider, $locationProvider) => {
                 }
             }
         })
+
     $locationProvider.html5Mode({
             enabled: true,
             requireBase: false
-        })
-})
-
-//
-//  Restanuglar setup
-//
-app.config((RestangularProvider, $stateProvider, $urlRouterProvider) => {
-    RestangularProvider.setBaseUrl('/api/v1')
-
-    RestangularProvider.setResponseExtractor((response, operation, what, url) => {
-            var newResponse
-
-            //  This is a get for a list
-            if (operation === "getList") {
-                //  Here we're returning an Array which has one special property metadata with our extra information
-                newResponse = response.data
-            } else  {
-                //  This is an element
-                newResponse = response.data
-            }
-            return newResponse
         })
 
     //  Unmatched URL state
     $urlRouterProvider.otherwise("/")
 })
 
+//
+//  Restanuglar setup
+//
+app.config((RestangularProvider) => {
+    RestangularProvider.setBaseUrl('/api/v1')
+
+    RestangularProvider.setResponseExtractor((response, operation, what, url) => {
+            //  This is a get for a list
+            if (operation === "getList") {
+                //  Here we're returning an Array which has one special property metadata with our extra information
+                return response.data
+            } else  {
+                //  This is an element
+                return response.data
+            }
+        })
+})
+
 app.run(($rootScope, $state, $location, AuthService) => {
     $rootScope.$on("$stateChangeStart", (event, toState, toParams, fromState, fromParams) => {
         if (toState.authenticate && !AuthService.isAuthenticated()) {
-            //  User isn’t authenticated
+            //  If the user isn't authenticated, redirect to the login page with a good "next" URL
             let href = $state.href(toState, toParams)
             $state.transitionTo("app.auth.login", { next: $location.path() })
             event.preventDefault()
