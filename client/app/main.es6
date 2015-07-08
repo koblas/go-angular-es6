@@ -19,7 +19,7 @@ angular.element(document).ready(() => angular.bootstrap(document, [app.name]))
 //
 //  Set the layout and Router
 //
-app.config(($stateProvider, $locationProvider, $urlRouteProvider) => {
+app.config(($stateProvider, $locationProvider, $urlRouterProvider) => {
     $stateProvider
         .state('app', {
             url: '',
