@@ -4,4 +4,4 @@
 **
 */
 
-export default angular.module('iqvine', ['restangular', 'ui.router', 'ngCookies', 'ui.bootstrap'])
+export default angular.module('app', ['restangular', 'ui.router', 'ngCookies', 'ui.bootstrap'])
